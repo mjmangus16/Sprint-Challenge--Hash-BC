@@ -22,9 +22,16 @@ def proof_of_work(last_proof):
 
     start = timer()
 
+    # Create a starting point for your proof to start guessing with. This is where you can gain some ground against other people mining.
+    # By increasing your starting point and increasing the amount the proof is increased by for each guess, you are moving ahead at a faster pace
     print("Searching for next proof")
-    proof = 0
+    proof = 2187869690
     #  TODO: Your code here
+
+    # Pass the last proof in to check that the proof is valid based on the requirements. 
+    # We keep increasing the proof until we find one that works.
+    while valid_proof(last_proof, proof) is False:
+        proof += 1111
 
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
@@ -40,7 +47,18 @@ def valid_proof(last_hash, proof):
     """
 
     # TODO: Your code here!
-    pass
+    
+    # The last hash comes in as an int. We need to convert it to a string and encode it so that we can hash it.
+    # We need the hashed version of the proof because that is what we are matching against
+    last_proof = f'{last_hash}'.encode()
+    last_proof_hash = hashlib.sha256(last_proof).hexdigest()
+
+    # Our proof is passed in as an int and needs to be converted to a string and encoded so we can hash it.
+    guess = f'{proof}'.encode()
+    guess_hash = hashlib.sha256(guess).hexdigest()
+    
+    # We return the True or False based on the sliced hashes based on the requirements of the proof
+    return guess_hash[:6] == last_proof_hash[-6:]
 
 
 if __name__ == '__main__':
@@ -49,6 +67,7 @@ if __name__ == '__main__':
         node = sys.argv[1]
     else:
         node = "https://lambda-coin.herokuapp.com/api"
+        # node = "https://lambda-coin-test-1.herokuapp.com/api"
 
     coins_mined = 0
 
